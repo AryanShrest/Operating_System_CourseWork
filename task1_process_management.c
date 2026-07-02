@@ -11,10 +11,6 @@
  *   SECTION D - Gantt-Chart Scheduler      (round-robin simulation)
  *   SECTION E - Live Thread Scheduler      (round-robin, condition var)
  *   SECTION F - Main menu
- *
- * Compile:  gcc -Wall -Wextra -std=c11 -D_DEFAULT_SOURCE -pthread \
- *               task1_process_management.c -o task1
- * Run:      ./task1
  * ===================================================================== */
 
 #include <stdio.h>
