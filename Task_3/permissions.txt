@@ -1,3 +1,2 @@
 report.txt admin staff rwx r-- ---
 notes.txt admin staff rw- r-- ---
-aryan admin admin rw- r-- ---

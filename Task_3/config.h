@@ -1,6 +1,4 @@
 /* config.h - shared path constants used by every module.
- * Centralising these avoids magic strings scattered across files and
- * makes it trivial to relocate the "data directory" if needed.
  */
 #ifndef CONFIG_H
 #define CONFIG_H

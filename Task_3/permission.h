@@ -1,14 +1,12 @@
 /* permission.h - simulated Unix-style owner/group/others permissions
  * (Task 3 requirement: "File permission system: read, write, execute
- * for owner/group/others"). Permissions are simulated in software
- * rather than relying on the real filesystem's permission bits, so
- * behaviour is identical and demonstrable regardless of OS/filesystem.
+ * for owner/group/others"). 
  */
 #ifndef PERMISSION_H
 #define PERMISSION_H
 
 #define MAX_FILENAME 64
-#define PERM_STR_LEN 4   /* e.g. "rwx" + NUL */
+#define PERM_STR_LEN 4   
 
 typedef struct {
     char filename[MAX_FILENAME];
@@ -19,9 +17,7 @@ typedef struct {
     char others_perm[PERM_STR_LEN];  /* e.g. "---" */
 } FilePermission;
 
-/* Registers a new file with default permissions (owner: rw-, group:
- * r--, others: ---), owned by `owner`/`group`. Called by file_ops.c
- * whenever a file is created. */
+
 void permission_create_entry(const char *filename, const char *owner, const char *group);
 
 /* Removes a file's permission entry (called on delete). */

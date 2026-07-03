@@ -1,5 +1,4 @@
-/* file_ops.h - create/read/write/delete operations (Task 3
- * requirement: "File creation, reading, writing, and deletion
+/* file_ops.h - create/read/write/delete operations 
  * operations"). Every operation is gated by permission.c and logged
  * by logger.c.
  */

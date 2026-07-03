@@ -1,11 +1,5 @@
 /* auth.c
- *
- * SECURITY NOTE: users.txt stores passwords in plaintext. This is a
- * deliberate simplification for an academic demonstration so the file
- * can be inspected and marked easily. A production system must never
- * do this -- it should store only a salted hash (e.g. bcrypt/Argon2)
- * and compare hashes, never the raw password, so that even someone
- * with read access to the user database cannot recover passwords.
+
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,11 +25,7 @@ void auth_ensure_users_file(void) {
     fclose(f);
 }
 
-/* Reads a line of input with the terminal echo turned off, printing a
- * '*' for every character typed instead (so the user still gets
- * visual feedback that keystrokes registered, without revealing the
- * password on screen). Falls back to a plain read if stdin is not an
- * interactive terminal (e.g. input piped in for automated testing). */
+
 static void read_masked(char *buf, size_t size) {
     if (!isatty(fileno(stdin))) {
         if (fgets(buf, (int)size, stdin)) {
@@ -123,3 +113,6 @@ int auth_login(void) {
     printf("\nToo many failed attempts. Exiting for security.\n");
     return 0;
 }
+
+
+

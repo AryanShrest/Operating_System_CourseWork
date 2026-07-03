@@ -11,12 +11,7 @@ SecureFileManager/
 ├── file_ops.c / file_ops.h    # create, read, write, delete
 ├── permission.c / permission.h# owner/group/others rwx permissions
 │
-└── (generated on first run)
-    ├── users.txt          # user accounts: "username password group"
-    ├── permissions.txt    # per-file permission records
-    └── files/             # all managed files live here
-        ├── report.txt
-        └── notes.txt
+
 ```
 
 ## Compile
