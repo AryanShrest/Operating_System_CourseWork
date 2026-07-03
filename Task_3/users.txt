@@ -1,0 +1,3 @@
+admin password123 admin
+john hello123 staff
+alice abc123 staff
