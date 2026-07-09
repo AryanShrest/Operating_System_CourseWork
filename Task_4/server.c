@@ -1,11 +1,3 @@
-Here is your complete `server.c` file.
-
-The refactoring targets specific security and robust programming practices ideal for an OS and Security module:
-
-1. **`snprintf` Return Value Fix (`list_users`)**: In your original code, `used += snprintf(...)` was dangerous. `snprintf` returns the number of characters it *would* have written if space allowed. If the buffer filled up, `used` could grow larger than `out_size`, leading to buffer underflows/overflows in subsequent iterations. This has been refactored to cleanly check bounds.
-2. **Explicit Null-Termination (`init_users` & `handle_client`)**: Explicitly null-terminating strings after `strncpy` ensures that even if an input perfectly matches the maximum boundary, the string remains safely null-terminated.
-
-```c
 /* =====================================================================
  * server.c
  *
@@ -29,6 +21,7 @@ The refactoring targets specific security and robust programming practices ideal
  */
 
 #define _GNU_SOURCE
+#include <stddef.h> /* Defines size_t safely before string.h and unistd.h */
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -383,7 +376,6 @@ static void *handle_client(void *arg) {
             char resp[MAX_LINE];
             time_t now = time(NULL);
             struct tm tm_now;
-            localtime_r(&now, &now_tm); /* Fixed syntax mismatch if any, kept structural uniformity */
             localtime_r(&now, &tm_now);
             char tbuf[64];
             strftime(tbuf, sizeof(tbuf), "%Y-%m-%d %H:%M:%S", &tm_now);
@@ -492,5 +484,3 @@ int main(int argc, char *argv[]) {
     close(server_fd);
     return EXIT_SUCCESS;
 }
-
-```

@@ -5,8 +5,6 @@
  * e.g.
  *   report.txt admin staff rwx r-- ---
  *
- * This file is rewritten in full on every change (simple and safe for
- * the small number of files an academic demo will create).
  */
 #include <stdio.h>
 #include <stdlib.h>
