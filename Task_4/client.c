@@ -29,54 +29,77 @@ static int sock_fd = -1;
 static volatile int running = 1;
 
 /* Read a single newline-terminated line from the socket */
-static ssize_t read_line(int fd, char *buf, size_t max_len) {
-    size_t total = 0;
+static ssize_t read_line(int fd, char *buffer, size_t max_len)
+{
+    size_t index = 0;
 
-    while (total < max_len - 1) {
-        char c;
-        ssize_t n = recv(fd, &c, 1, 0);
+    while (1)
+    {
+        char ch;
+        ssize_t bytes = recv(fd, &ch, sizeof(ch), 0);
 
-        if (n < 0) {
+        if (bytes == 0)
+        {
+            return 0;   // Connection closed
+        }
+
+        if (bytes < 0)
+        {
             if (errno == EINTR)
+            {
                 continue;
+            }
             return -1;
         }
 
-        if (n == 0)
-            return 0;
-
-        if (c == '\n') {
-            buf[total] = '\0';
-            return (ssize_t)total;
+        if (ch == '\r')
+        {
+            continue;
         }
 
-        if (c != '\r')
-            buf[total++] = c;
-    }
+        if (ch == '\n')
+        {
+            buffer[index] = '\0';
+            return (ssize_t)index;
+        }
 
-    return -1;
+        if (index >= max_len - 1)
+        {
+            return -1;   // Buffer full
+        }
+
+        buffer[index++] = ch;
+    }
 }
 
 /* Send a complete line with newline terminator */
-static int send_line(int fd, const char *msg) {
-    char framed[MAX_LINE + 2];
+static int send_line(int fd, const char *message)
+{
+    char buffer[MAX_LINE + 2];
+    size_t length, remaining;
+    const char *ptr;
 
-    snprintf(framed, sizeof(framed), "%s\n", msg);
+    snprintf(buffer, sizeof(buffer), "%s\n", message);
 
-    size_t len = strlen(framed);
-    size_t sent_total = 0;
+    length = strlen(buffer);
+    remaining = length;
+    ptr = buffer;
 
-    while (sent_total < len) {
-        ssize_t sent = send(fd, framed + sent_total,
-                            len - sent_total, 0);
+    while (remaining > 0)
+    {
+        ssize_t bytes = send(fd, ptr, remaining, 0);
 
-        if (sent < 0) {
+        if (bytes == -1)
+        {
             if (errno == EINTR)
+            {
                 continue;
+            }
             return -1;
         }
 
-        sent_total += (size_t)sent;
+        ptr += bytes;
+        remaining -= (size_t)bytes;
     }
 
     return 0;
