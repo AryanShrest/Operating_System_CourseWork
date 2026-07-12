@@ -79,23 +79,31 @@ static pthread_mutex_t log_mutex     = PTHREAD_MUTEX_INITIALIZER;
 static volatile sig_atomic_t server_running = 1;
 
 /* ---------------------------------------------------------------------
- * Utility: thread-safe timestamped logging (audit trail)
- * ------------------------------------------------------------------- */
-static void log_event(const char *fmt, ...) {
-    char timebuf[32];
-    time_t now = time(NULL);
-    struct tm tm_now;
-    localtime_r(&now, &tm_now);
-    strftime(timebuf, sizeof(timebuf), "%Y-%m-%d %H:%M:%S", &tm_now);
+ * /* ---------------------------------------------------------------
+ * Thread-safe logging with timestamp
+ * --------------------------------------------------------------- */
+static void log_event(const char *format, ...)
+{
+    time_t current_time = time(NULL);
+    struct tm local_time;
+    char timestamp[32];
+
+    localtime_r(&current_time, &local_time);
+    strftime(timestamp, sizeof(timestamp),
+             "%Y-%m-%d %H:%M:%S", &local_time);
 
     pthread_mutex_lock(&log_mutex);
-    printf("[%s] ", timebuf);
-    va_list args;
-    va_start(args, fmt);
-    vprintf(fmt, args);
-    va_end(args);
-    printf("\n");
+
+    printf("[%s] ", timestamp);
+
+    va_list ap;
+    va_start(ap, format);
+    vprintf(format, ap);
+    va_end(ap);
+
+    putchar('\n');
     fflush(stdout);
+
     pthread_mutex_unlock(&log_mutex);
 }
 
