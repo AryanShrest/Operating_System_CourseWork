@@ -136,64 +136,64 @@ static void *reader_thread(void *arg) {
     return NULL;
 }
 
-/* Basic client-side input validation */
-static int validate_input(const char *s) {
-    size_t len = strlen(s);
-
-    if (len == 0 || len >= MAX_LINE - 16)
+/* /* Checks whether the user's input is within the allowed size */
+static int validate_input(const char *input)
+{
+    if (input == NULL)
         return 0;
 
-    return 1;
+    size_t length = strlen(input);
+
+    return (length > 0 && length < (MAX_LINE - 16));
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
+    const char *ip = DEFAULT_IP;
+    int port = DEFAULT_PORT;
 
-    const char *server_ip =
-        (argc >= 2) ? argv[1] : DEFAULT_IP;
+    if (argc > 1)
+        ip = argv[1];
 
-    int port =
-        (argc >= 3) ? atoi(argv[2]) : DEFAULT_PORT;
+    if (argc > 2)
+        port = atoi(argv[2]);
 
-    sock_fd = socket(AF_INET, SOCK_STREAM, 0);
-
-    if (sock_fd < 0) {
+    if ((sock_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
         perror("socket");
         return EXIT_FAILURE;
     }
 
-    struct sockaddr_in server_addr;
-    memset(&server_addr, 0, sizeof(server_addr));
+    struct sockaddr_in server;
+    memset(&server, 0, sizeof(server));
 
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(port);
+    server.sin_family = AF_INET;
+    server.sin_port = htons(port);
 
-    if (inet_pton(AF_INET, server_ip,
-                  &server_addr.sin_addr) <= 0) {
-
-        fprintf(stderr,
-                "Invalid server address: %s\n",
-                server_ip);
-
+    if (inet_pton(AF_INET, ip, &server.sin_addr) <= 0) {
+        fprintf(stderr, "Error: Invalid IP address (%s)\n", ip);
         close(sock_fd);
         return EXIT_FAILURE;
     }
 
     if (connect(sock_fd,
-                (struct sockaddr *)&server_addr,
-                sizeof(server_addr)) < 0) {
-
+                (struct sockaddr *)&server,
+                sizeof(server)) == -1) {
         perror("connect");
         close(sock_fd);
         return EXIT_FAILURE;
     }
 
-    printf("Connected to %s:%d\n", server_ip, port);
+    printf("Connected successfully to %s:%d\n", ip, port);
 
-    char line[MAX_LINE];
+    char buffer[MAX_LINE];
 
-    /* Receive welcome message */
-    if (read_line(sock_fd, line, sizeof(line)) > 0)
-        printf("Server: %s\n", line);
+    /* Display server greeting */
+    if (read_line(sock_fd, buffer, sizeof(buffer)) > 0) {
+        printf("Server: %s\n", buffer);
+    }
+
+    return 0;
+}
 
     /* ---------------- Authentication ---------------- */
 
